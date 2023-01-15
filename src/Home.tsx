@@ -65,7 +65,7 @@ const Home = () => {
   const contents = () => (
     <>
       <div className="card">
-        Hollow {session?.username}!!
+        Hello {session?.username}!!
       </div>
     </>
   )
