@@ -1,4 +1,5 @@
 import {Buffer} from "buffer";
+import {base64ToArrayBuffer} from "../../lib/base64ToArrayBuffer";
 
 type AuthenticationResult = "invalid_input" | "user_not_found" | "failed_to_get_credential" | "success" | "failure"
 
@@ -26,7 +27,7 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
   options.challenge = encoder.encode(options.challenge)
   if (options.allowCredentials) {
     for (let cred of options.allowCredentials) {
-      cred.id = encoder.encode(cred.id)
+      cred.id = base64ToArrayBuffer(cred.id)
     }
   }
   const credential = await navigator.credentials.get({publicKey: options})
@@ -49,7 +50,7 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      id: Buffer.from(credential.rawId).toString('base64'),
+      id: Buffer.from(credential.rawId).toString('base64'), // TODO: id は rawId を base64url encode したもの
       rawId: Buffer.from(credential.rawId).toString('base64'),
       response: {
         authenticatorData: Buffer.from(authenticatorAssertionResponse.authenticatorData).toString('base64'),
