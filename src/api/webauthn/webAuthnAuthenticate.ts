@@ -1,5 +1,5 @@
-import {Buffer} from "buffer";
 import {base64ToArrayBuffer} from "../../lib/base64ToArrayBuffer";
+import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
 
 type AuthenticationResult = "invalid_input" | "user_not_found" | "failed_to_get_credential" | "success" | "failure"
 
@@ -50,13 +50,13 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      id: Buffer.from(credential.rawId).toString('base64'), // TODO: id は rawId を base64url encode したもの
-      rawId: Buffer.from(credential.rawId).toString('base64'),
+      id: arrayBufferToBase64(credential.rawId), // TODO: id は rawId を base64url encode したもの
+      rawId: arrayBufferToBase64(credential.rawId),
       response: {
-        authenticatorData: Buffer.from(authenticatorAssertionResponse.authenticatorData).toString('base64'),
-        signature: Buffer.from(authenticatorAssertionResponse.signature).toString('base64'),
-        userHandle: Buffer.from(authenticatorAssertionResponse.userHandle!!).toString('base64'),
-        clientDataJSON: Buffer.from(authenticatorAssertionResponse.clientDataJSON).toString('base64'),
+        authenticatorData: arrayBufferToBase64(authenticatorAssertionResponse.authenticatorData),
+        signature: arrayBufferToBase64(authenticatorAssertionResponse.signature),
+        userHandle: arrayBufferToBase64(authenticatorAssertionResponse.userHandle!!),
+        clientDataJSON: arrayBufferToBase64(authenticatorAssertionResponse.clientDataJSON),
       }
     })
   })

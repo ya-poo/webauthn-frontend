@@ -1,4 +1,4 @@
-import {Buffer} from "buffer";
+import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
 
 type RegistrationResult = "invalid_input" | "already_registered" | "success"
 
@@ -40,8 +40,8 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      clientDataJSON: Buffer.from(authenticatorAttestationResponse.clientDataJSON).toString('base64'),
-      attestationObject: Buffer.from(authenticatorAttestationResponse.attestationObject).toString('base64'),
+      clientDataJSON: arrayBufferToBase64(authenticatorAttestationResponse.clientDataJSON),
+      attestationObject: arrayBufferToBase64(authenticatorAttestationResponse.attestationObject),
     })
   })
 
