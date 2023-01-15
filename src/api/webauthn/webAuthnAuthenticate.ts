@@ -1,5 +1,6 @@
 import {base64ToArrayBuffer} from "../../lib/base64ToArrayBuffer";
 import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
+import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 
 type AuthenticationResult = "invalid_input" | "user_not_found" | "failed_to_get_credential" | "success" | "failure"
 
@@ -23,8 +24,7 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
 
   const options = await preAuthenticationResponse.json()
 
-  const encoder = new TextEncoder()
-  options.challenge = encoder.encode(options.challenge)
+  options.challenge = utf8StringToArrayBuffer(options.challenge)
   if (options.allowCredentials) {
     for (let cred of options.allowCredentials) {
       cred.id = base64ToArrayBuffer(cred.id)

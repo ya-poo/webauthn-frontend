@@ -1,4 +1,5 @@
 import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
+import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 
 type RegistrationResult = "invalid_input" | "already_registered" | "success"
 
@@ -20,12 +21,11 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
   }
   const options = await preregistrationResponse.json()
 
-  const encoder = new TextEncoder()
-  options.user.id = encoder.encode(options.user.id)
-  options.challenge = encoder.encode(options.challenge)
+  options.user.id = utf8StringToArrayBuffer(options.user.id)
+  options.challenge = utf8StringToArrayBuffer(options.challenge)
   if (options.excludeCredentials) {
     for (let cred of options.excludeCredentials) {
-      cred.id = encoder.encode(cred.id);
+      cred.id = utf8StringToArrayBuffer(cred.id);
     }
   }
   const credential = await navigator.credentials.create({publicKey: options})
