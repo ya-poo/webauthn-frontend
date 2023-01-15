@@ -5,7 +5,6 @@ import {webAuthnAuthenticate} from "./api/webauthn/webAuthnAuthenticate";
 import {fetchSession, Session} from "./api/fetchSession";
 
 const Home = () => {
-  const [count, setCount] = useState(0)
   const [session, setSession] = useState<Session | undefined>(undefined)
   const [username, setUsername] = useState('')
 
