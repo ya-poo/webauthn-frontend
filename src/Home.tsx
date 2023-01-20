@@ -19,6 +19,10 @@ const Home = () => {
         alert('username を入力して下さい。')
         break
       }
+      case "failed": {
+        alert('登録に失敗しました。')
+        break;
+      }
       case "success": {
         alert(`登録成功。username = ${username}`)
         break;

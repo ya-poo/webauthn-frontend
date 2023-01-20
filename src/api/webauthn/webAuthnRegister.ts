@@ -1,7 +1,7 @@
 import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
 import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 
-type RegistrationResult = "invalid_input" | "already_registered" | "success"
+type RegistrationResult = "invalid_input" | "already_registered" | "success" | "failed"
 
 export const webAuthnRegister = async (username: string): Promise<RegistrationResult> => {
   if (username === '') {
@@ -34,7 +34,7 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
     })
   const authenticatorAttestationResponse = (credential as PublicKeyCredential).response as AuthenticatorAttestationResponse
 
-  await fetch('http://localhost:8080/registration', {
+  const registrationResponse = await fetch('http://localhost:8080/registration', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -44,6 +44,10 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
       attestationObject: arrayBufferToBase64(authenticatorAttestationResponse.attestationObject),
     })
   })
+
+  if (!registrationResponse.ok) {
+    return "failed"
+  }
 
   return "success"
 }
