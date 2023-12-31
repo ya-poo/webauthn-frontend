@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import './Home.css'
 import {webAuthnRegister} from "./api/webauthn/webAuthnRegister";
 import {webAuthnAuthenticate} from "./api/webauthn/webAuthnAuthenticate";
 import {fetchSession, Session} from "./api/fetchSession";
@@ -7,6 +6,11 @@ import {fetchSession, Session} from "./api/fetchSession";
 const Home = () => {
   const [session, setSession] = useState<Session | undefined>(undefined)
   const [username, setUsername] = useState('')
+
+  const supportWebAuthn = (): boolean => {
+    //  navigator.credentials.create は navigator.credentials.get が存在するときは必ず存在するらしい
+    return !!(navigator.credentials && navigator.credentials.get)
+  }
 
   const onRegister = async () => {
     const result = await webAuthnRegister(username)
@@ -50,7 +54,6 @@ const Home = () => {
         break
       }
       case "success": {
-        alert('ログイン成功。')
         const session = await fetchSession()
         setSession(session)
         break
@@ -60,7 +63,12 @@ const Home = () => {
 
   const form = () => (
     <>
-      <input type="text" placeholder="username" onChange={(event) => setUsername(event.target.value)}/>
+      <input
+        type="text"
+        placeholder="username"
+        autoComplete="username webauthn"
+        onChange={(event) => setUsername(event.target.value)}
+      />
       <button onClick={onRegister}>Register</button>
       <button onClick={onLogin}>Login</button>
     </>
@@ -76,11 +84,11 @@ const Home = () => {
 
   return (
     <div className="Home">
-      <h1>WebAuthn Sample Application</h1>
+      <h1>Sample WebAuthn Application</h1>
       {
-        session
-          ? contents()
-          : form()
+        session ? contents() :
+          supportWebAuthn() ? form()
+            : <>WebAuthn is not supported by this browser.</>
       }
     </div>
   )

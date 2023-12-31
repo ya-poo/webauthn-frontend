@@ -31,8 +31,9 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
   const credential = await navigator.credentials.create({publicKey: options})
     .catch((err) => {
       console.log("ERROR", err)
-    })
-  const authenticatorAttestationResponse = (credential as PublicKeyCredential).response as AuthenticatorAttestationResponse
+    }) as PublicKeyCredential
+
+  const authenticatorAttestationResponse = credential.response as AuthenticatorAttestationResponse
 
   const registrationResponse = await fetch('http://localhost:8080/registration', {
     method: 'POST',
