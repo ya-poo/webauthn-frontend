@@ -20,6 +20,7 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
     return "already_registered"
   }
   const options = await preregistrationResponse.json()
+  console.log(`PublicKeyCredentialCreationOption:\n${JSON.stringify(options, null, "\t")}`)
 
   options.user.id = utf8StringToArrayBuffer(options.user.id)
   options.challenge = utf8StringToArrayBuffer(options.challenge)
@@ -28,6 +29,7 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
       cred.id = utf8StringToArrayBuffer(cred.id);
     }
   }
+
   const credential = await navigator.credentials.create({publicKey: options})
     .catch((err) => {
       console.log("ERROR", err)

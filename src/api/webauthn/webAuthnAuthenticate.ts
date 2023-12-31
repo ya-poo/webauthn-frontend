@@ -11,6 +11,7 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
 
   const preAuthenticationResponse = await fetch('http://localhost:8080/pre-authentication', {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -18,11 +19,9 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
       username: username
     })
   })
-  if (preAuthenticationResponse.status === 400) {
-    return "user_not_found"
-  }
 
   const options = await preAuthenticationResponse.json()
+  console.log(`PublicKeyCredentialRequestOption:\n${JSON.stringify(options, null, "\t")}`)
 
   options.challenge = utf8StringToArrayBuffer(options.challenge)
   if (options.allowCredentials) {
@@ -30,12 +29,13 @@ export const webAuthnAuthenticate = async (username: string): Promise<Authentica
       cred.id = base64ToArrayBuffer(cred.id)
     }
   }
+
   const credential = await navigator.credentials.get({publicKey: options})
     .then((cred) => {
       return cred as PublicKeyCredential
     })
     .catch((err) => {
-      console.log('ERROR', err)
+      console.log(err)
     })
   if (credential == null) {
     return "failed_to_get_credential"
