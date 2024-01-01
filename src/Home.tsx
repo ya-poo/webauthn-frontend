@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {webAuthnRegister} from "./api/webauthn/webAuthnRegister";
 import {webAuthnAuthenticate} from "./api/webauthn/webAuthnAuthenticate";
 import {fetchSession, Session} from "./api/fetchSession";
@@ -11,6 +11,16 @@ const Home = () => {
     //  navigator.credentials.create は navigator.credentials.get が存在するときは必ず存在するらしい
     return !!(navigator.credentials && navigator.credentials.get)
   }
+
+  const supportConditionalMediation = (): boolean => {
+    return !!(PublicKeyCredential.isConditionalMediationAvailable && PublicKeyCredential.isConditionalMediationAvailable())
+  }
+
+  useEffect(() => {
+    if (!session && supportConditionalMediation()) {
+      login(true);
+    }
+  }, [])
 
   const onRegister = async () => {
     const result = await webAuthnRegister(username)
@@ -34,17 +44,11 @@ const Home = () => {
     }
   }
 
-  const onLogin = async () => {
-    const result = await webAuthnAuthenticate(username)
+  const login = async (
+    isConditionalMediation: boolean
+  ) => {
+    const result = await webAuthnAuthenticate(isConditionalMediation)
     switch (result) {
-      case "invalid_input": {
-        alert('username を入力して下さい。')
-        break
-      }
-      case "user_not_found": {
-        alert(`username: ${username} は存在しません。`)
-        break
-      }
       case "failed_to_get_credential": {
         alert('この端末のクレデンシャルを取得できませんでした。')
         break
@@ -70,14 +74,14 @@ const Home = () => {
         onChange={(event) => setUsername(event.target.value)}
       />
       <button onClick={onRegister}>Register</button>
-      <button onClick={onLogin}>Login</button>
+      <button onClick={() => login(false)}>Login</button>
     </>
   )
 
-  const contents = () => (
+  const contents = (session: Session) => (
     <>
       <div className="card">
-        Hello {session?.username}!!
+        Hello {session.username}!!
       </div>
     </>
   )
@@ -86,7 +90,7 @@ const Home = () => {
     <div className="Home">
       <h1>Sample WebAuthn Application</h1>
       {
-        session ? contents() :
+        session ? contents(session) :
           supportWebAuthn() ? form()
             : <>WebAuthn is not supported by this browser.</>
       }
