@@ -7,4 +7,4 @@ export const base64ToArrayBuffer = (base64: string) => {
   }
 
   return bytes.buffer;
-}
+};

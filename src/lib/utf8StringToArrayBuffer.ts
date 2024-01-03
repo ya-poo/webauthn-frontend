@@ -1,5 +1,5 @@
-const encoder = new TextEncoder()
+const encoder = new TextEncoder();
 
 export const utf8StringToArrayBuffer = (str: string): ArrayBuffer => {
-  return encoder.encode(str)
-}
+  return encoder.encode(str);
+};
