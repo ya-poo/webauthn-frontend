@@ -5,7 +5,8 @@ import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 type AuthenticationResult = "failed_to_get_credential" | "success" | "failure"
 
 export const webAuthnAuthenticate = async (
-  isConditionalMediation: boolean
+  isConditionalMediation: boolean,
+  signal: AbortSignal,
 ): Promise<AuthenticationResult> => {
   const preAuthenticationResponse = await fetch('http://localhost:8080/pre-authentication', {
     method: 'POST',
@@ -20,8 +21,9 @@ export const webAuthnAuthenticate = async (
     }
   }
   if (isConditionalMediation) {
-    options['mediation'] = 'conditional'
+    options.mediation = 'conditional'
   }
+  options.signal = signal
 
   console.log(`PublicKeyCredentialRequestOption:\n${JSON.stringify(options, null, "\t")}`)
 

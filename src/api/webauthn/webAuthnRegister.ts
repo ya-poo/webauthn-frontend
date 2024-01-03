@@ -3,7 +3,10 @@ import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 
 type RegistrationResult = "fail_create_credential" | "invalid_input" | "already_registered" | "success" | "failed"
 
-export const webAuthnRegister = async (username: string): Promise<RegistrationResult> => {
+export const webAuthnRegister = async (
+  username: string,
+  signal: AbortSignal,
+): Promise<RegistrationResult> => {
   if (username === '') {
     return "invalid_input"
   }
@@ -27,6 +30,7 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
       cred.id = utf8StringToArrayBuffer(cred.id);
     }
   }
+  options.signal = signal
 
   console.log(`PublicKeyCredentialCreationOption:\n${JSON.stringify(options, null, "\t")}`)
 

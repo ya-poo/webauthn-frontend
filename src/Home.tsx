@@ -6,6 +6,7 @@ import {fetchSession, Session} from "./api/fetchSession";
 const Home = () => {
   const [session, setSession] = useState<Session | undefined>(undefined)
   const [username, setUsername] = useState('')
+  const [controller, setController] = useState<AbortController | undefined>(undefined)
 
   const supportWebAuthn = (): boolean => {
     //  navigator.credentials.create は navigator.credentials.get が存在するときは必ず存在するらしい
@@ -16,14 +17,25 @@ const Home = () => {
     return !!(PublicKeyCredential.isConditionalMediationAvailable && PublicKeyCredential.isConditionalMediationAvailable())
   }
 
+  const getNextWebAuthnApiSignal = (): AbortSignal => {
+    if (controller !== undefined) {
+      const error = new Error('既存の WebAuthn の API を終了させます')
+      controller.abort(error);
+    }
+    const newController = new AbortController();
+    setController(newController)
+    return newController.signal
+  }
+
   useEffect(() => {
     if (!session && supportConditionalMediation()) {
       login(true);
     }
   }, [])
 
-  const onRegister = async () => {
-    const result = await webAuthnRegister(username)
+  const register = async () => {
+    const signal = getNextWebAuthnApiSignal();
+    const result = await webAuthnRegister(username, signal)
     switch (result) {
       case "already_registered": {
         console.log(`username: ${username} は登録済みです。`)
@@ -51,7 +63,8 @@ const Home = () => {
   const login = async (
     isConditionalMediation: boolean
   ) => {
-    const result = await webAuthnAuthenticate(isConditionalMediation)
+    const signal = getNextWebAuthnApiSignal();
+    const result = await webAuthnAuthenticate(isConditionalMediation, signal)
     switch (result) {
       case "failed_to_get_credential": {
         console.log('この端末のクレデンシャルを取得できませんでした。')
@@ -77,7 +90,7 @@ const Home = () => {
         autoComplete="username webauthn"
         onChange={(event) => setUsername(event.target.value)}
       />
-      <button onClick={onRegister}>Register</button>
+      <button onClick={register}>Register</button>
       <button onClick={() => login(false)}>Login</button>
     </>
   )
