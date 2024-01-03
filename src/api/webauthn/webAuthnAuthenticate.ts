@@ -31,11 +31,11 @@ export const webAuthnAuthenticate = async (
     })
     .catch((err) => {
       console.log(err)
+      return undefined
     })
   if (credential == null) {
     return "failed_to_get_credential"
   }
-
   const authenticatorAssertionResponse = credential.response as AuthenticatorAssertionResponse
 
   const authenticationResponse = await fetch('http://localhost:8080/authentication', {

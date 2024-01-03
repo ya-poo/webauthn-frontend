@@ -26,19 +26,23 @@ const Home = () => {
     const result = await webAuthnRegister(username)
     switch (result) {
       case "already_registered": {
-        alert(`username: ${username} は登録済みです。`)
+        console.log(`username: ${username} は登録済みです。`)
         break
       }
       case "invalid_input": {
-        alert('username を入力して下さい。')
+        console.log('username を入力して下さい。')
         break
       }
       case "failed": {
-        alert('登録に失敗しました。')
+        console.log('登録に失敗しました。')
         break;
       }
       case "success": {
-        alert(`登録成功。username = ${username}`)
+        console.log(`登録成功。username = ${username}`)
+        break;
+      }
+      case "fail_create_credential": {
+        console.log('クレデンシャルの作成に失敗しました。')
         break;
       }
     }
@@ -50,11 +54,11 @@ const Home = () => {
     const result = await webAuthnAuthenticate(isConditionalMediation)
     switch (result) {
       case "failed_to_get_credential": {
-        alert('この端末のクレデンシャルを取得できませんでした。')
+        console.log('この端末のクレデンシャルを取得できませんでした。')
         break
       }
       case "failure": {
-        alert('ログイン失敗。')
+        console.log('ログイン失敗。')
         break
       }
       case "success": {

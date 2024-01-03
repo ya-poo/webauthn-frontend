@@ -1,7 +1,7 @@
 import {arrayBufferToBase64} from "../../lib/arrayBufferToBase64";
 import {utf8StringToArrayBuffer} from "../../lib/utf8StringToArrayBuffer";
 
-type RegistrationResult = "invalid_input" | "already_registered" | "success" | "failed"
+type RegistrationResult = "fail_create_credential" | "invalid_input" | "already_registered" | "success" | "failed"
 
 export const webAuthnRegister = async (username: string): Promise<RegistrationResult> => {
   if (username === '') {
@@ -31,9 +31,16 @@ export const webAuthnRegister = async (username: string): Promise<RegistrationRe
   console.log(`PublicKeyCredentialCreationOption:\n${JSON.stringify(options, null, "\t")}`)
 
   const credential = await navigator.credentials.create(options)
+    .then((credential) => {
+      return credential as PublicKeyCredential
+    })
     .catch((err) => {
       console.log("ERROR", err)
-    }) as PublicKeyCredential
+      return undefined
+    })
+  if (credential === undefined) {
+    return "fail_create_credential"
+  }
 
   const authenticatorAttestationResponse = credential.response as AuthenticatorAttestationResponse
 
