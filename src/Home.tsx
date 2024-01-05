@@ -9,6 +9,7 @@ const Home = () => {
   const [controller, setController] = useState<AbortController | undefined>(
     undefined,
   );
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
   const supportWebAuthn = (): boolean => {
     //  navigator.credentials.create は navigator.credentials.get が存在するときは必ず存在するらしい
@@ -43,23 +44,23 @@ const Home = () => {
     const result = await webAuthnRegister(username, signal);
     switch (result) {
       case 'already_registered': {
-        console.log(`username: ${username} は登録済みです。`);
+        setMessage(`username: ${username} は登録済みです。`);
         break;
       }
       case 'invalid_input': {
-        console.log('username を入力して下さい。');
+        setMessage('username を入力して下さい。');
         break;
       }
       case 'failed': {
-        console.log('登録に失敗しました。');
+        setMessage('登録に失敗しました。');
         break;
       }
       case 'success': {
-        console.log(`登録成功。username = ${username}`);
+        setMessage(`登録成功。username = ${username}`);
         break;
       }
       case 'fail_create_credential': {
-        console.log('クレデンシャルの作成に失敗しました。');
+        setMessage('クレデンシャルの作成に失敗しました。');
         break;
       }
     }
@@ -70,11 +71,11 @@ const Home = () => {
     const result = await webAuthnAuthenticate(isConditionalMediation, signal);
     switch (result) {
       case 'failed_to_get_credential': {
-        console.log('この端末のクレデンシャルを取得できませんでした。');
+        setMessage('この端末のクレデンシャルを取得できませんでした。');
         break;
       }
       case 'failure': {
-        console.log('ログイン失敗。');
+        setMessage('ログイン失敗。');
         break;
       }
       case 'success': {
@@ -95,6 +96,7 @@ const Home = () => {
       />
       <button onClick={register}>Register</button>
       <button onClick={() => login(false)}>Login</button>
+      {message && <div>{message}</div>}
     </>
   );
 
