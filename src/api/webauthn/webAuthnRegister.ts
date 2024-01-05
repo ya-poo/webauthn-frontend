@@ -19,6 +19,7 @@ export const webAuthnRegister = async (
     'http://localhost:8080/preregistration',
     {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -72,6 +73,7 @@ export const webAuthnRegister = async (
     'http://localhost:8080/registration',
     {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
