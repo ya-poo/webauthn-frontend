@@ -78,12 +78,16 @@ export const webAuthnRegister = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        type: credential.type,
+        id: credential.id,
+        rawId: arrayBufferToBase64(credential.rawId),
         clientDataJSON: arrayBufferToBase64(
           authenticatorAttestationResponse.clientDataJSON,
         ),
         attestationObject: arrayBufferToBase64(
           authenticatorAttestationResponse.attestationObject,
         ),
+        transports: authenticatorAttestationResponse.getTransports(),
       }),
     },
   );
