@@ -16,7 +16,7 @@ export const webAuthnRegister = async (
     return 'invalid_input';
   }
   const preregistrationResponse = await fetch(
-    'http://localhost:8080/preregistration',
+    'http://localhost:8080/pre-registration',
     {
       method: 'POST',
       credentials: 'include',
