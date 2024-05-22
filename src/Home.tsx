@@ -26,6 +26,7 @@ const Home = () => {
   const getNextWebAuthnApiSignal = (): AbortSignal => {
     if (controller !== undefined) {
       const error = new Error('既存の WebAuthn の API を終了させます');
+      error.name = 'AbortError';
       controller.abort(error);
     }
     const newController = new AbortController();
@@ -70,6 +71,9 @@ const Home = () => {
     const signal = getNextWebAuthnApiSignal();
     const result = await webAuthnAuthenticate(isConditionalMediation, signal);
     switch (result) {
+      case 'canceled': {
+        break;
+      }
       case 'failed_to_get_credential': {
         setMessage('この端末のクレデンシャルを取得できませんでした。');
         break;

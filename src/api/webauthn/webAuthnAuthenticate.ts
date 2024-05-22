@@ -2,7 +2,11 @@ import { base64ToArrayBuffer } from '../../lib/base64ToArrayBuffer';
 import { arrayBufferToBase64 } from '../../lib/arrayBufferToBase64';
 import { utf8StringToArrayBuffer } from '../../lib/utf8StringToArrayBuffer';
 
-type AuthenticationResult = 'failed_to_get_credential' | 'success' | 'failure';
+type AuthenticationResult =
+  | 'failed_to_get_credential'
+  | 'success'
+  | 'failure'
+  | 'canceled';
 
 export const webAuthnAuthenticate = async (
   isConditionalMediation: boolean,
@@ -40,11 +44,17 @@ export const webAuthnAuthenticate = async (
       return cred as PublicKeyCredential;
     })
     .catch((err) => {
-      console.log(err);
-      return undefined;
+      if (err.name === 'AbortError') {
+        return undefined;
+      }
+      return JSON.stringify(err);
     });
-  if (credential == null) {
-    return 'failed_to_get_credential';
+  if (typeof credential === 'string') {
+    console.error(credential);
+    return 'failure';
+  }
+  if (credential == undefined) {
+    return 'canceled';
   }
   const authenticatorAssertionResponse =
     credential.response as AuthenticatorAssertionResponse;
