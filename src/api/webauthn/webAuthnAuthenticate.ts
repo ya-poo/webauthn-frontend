@@ -13,10 +13,9 @@ export const webAuthnAuthenticate = async (
   signal: AbortSignal,
 ): Promise<AuthenticationResult> => {
   const preAuthenticationResponse = await fetch(
-    'http://localhost:8080/pre-authentication',
+    'http://localhost:8080/webauthn/credential_request_options',
     {
-      method: 'POST',
-      credentials: 'include',
+      method: 'GET',
     },
   );
 
@@ -60,7 +59,7 @@ export const webAuthnAuthenticate = async (
     credential.response as AuthenticatorAssertionResponse;
 
   const authenticationResponse = await fetch(
-    'http://localhost:8080/authentication',
+    'http://localhost:8080/webauthn/authentication',
     {
       method: 'POST',
       credentials: 'include',
@@ -68,7 +67,7 @@ export const webAuthnAuthenticate = async (
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: arrayBufferToBase64(credential.rawId), // TODO: id は rawId を base64url encode したもの
+        id: arrayBufferToBase64(credential.rawId),
         rawId: arrayBufferToBase64(credential.rawId),
         response: {
           authenticatorData: arrayBufferToBase64(

@@ -5,7 +5,6 @@ import { fetchSession, Session } from './api/fetchSession';
 
 const Home = () => {
   const [session, setSession] = useState<Session | undefined>(undefined);
-  const [username, setUsername] = useState('');
   const [controller, setController] = useState<AbortController | undefined>(
     undefined,
   );
@@ -42,22 +41,14 @@ const Home = () => {
 
   const register = async () => {
     const signal = getNextWebAuthnApiSignal();
-    const result = await webAuthnRegister(username, signal);
+    const result = await webAuthnRegister(signal);
     switch (result) {
-      case 'already_registered': {
-        setMessage(`username: ${username} は登録済みです。`);
-        break;
-      }
-      case 'invalid_input': {
-        setMessage('username を入力して下さい。');
-        break;
-      }
       case 'failed': {
         setMessage('登録に失敗しました。');
         break;
       }
       case 'success': {
-        setMessage(`登録成功。username = ${username}`);
+        setMessage("登録成功");
         break;
       }
       case 'fail_create_credential': {
@@ -96,7 +87,6 @@ const Home = () => {
         type="text"
         placeholder="username"
         autoComplete="username webauthn"
-        onChange={(event) => setUsername(event.target.value)}
       />
       <button onClick={register}>Register</button>
       <button onClick={() => login(false)}>Login</button>
