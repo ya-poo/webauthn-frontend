@@ -17,6 +17,7 @@ export const webAuthnRegister = async (
   );
 
   const options = await preregistrationResponse.json();
+  options.publicKey.rp.id = undefined;
   options.publicKey.user.id = utf8StringToArrayBuffer(
     options.publicKey.user.id,
   );
